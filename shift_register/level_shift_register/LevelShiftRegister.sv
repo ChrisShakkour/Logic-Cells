@@ -33,12 +33,14 @@ module LevelShiftRegister
   logic [DEPTH-1:0][W_DATA-1:0] shift_reg;
   logic [DEPTH-1:0][W_DATA-1:0] next_state;
   logic [W_DATA-1:0]            next_data_sticky;
+  logic                         shift_reg_en;
 
   always_ff @(posedge clk or negedge rstn) begin
     if(~rstn)             shift_reg <= '0;
     else if(soft_reset)   shift_reg <= '0;
-    else                  shift_reg <= next_state;
+    else if(shift_reg_en) shift_reg <= next_state;
   end
+  assign shift_reg_en = !(shift_reg ^ next_state);
 
   // Shift left and append new sample at stage 0.
   assign next_state = {shift_reg[DEPTH-2:0], next_data_sticky};
@@ -46,8 +48,6 @@ module LevelShiftRegister
 
 // Output is the last stage (oldest sample)
   assign data_out = shift_reg[DEPTH-1];
-
-endmodule
 
 `ifndef ASSERTIONS_OFF
   //cadence translate_off
@@ -59,3 +59,4 @@ endmodule
   //synopsys translate_on
   //cadence translate_on
 `endif
+endmodule

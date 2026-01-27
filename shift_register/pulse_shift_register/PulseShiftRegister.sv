@@ -27,24 +27,20 @@ module PulseShiftRegister
 
   logic [DEPTH-1:0][W_DATA-1:0] shift_reg;
   logic [DEPTH-1:0][W_DATA-1:0] next_state;
-  logic                         shift_en;
+  logic                         shift_reg_en;
 
   always_ff @(posedge clk or negedge rstn) begin
     if(~rstn)             shift_reg <= '0;
     else if(soft_reset)   shift_reg <= '0;
-    else if(shift_en)     shift_reg <= next_state;
+    else if(shift_reg_en) shift_reg <= next_state;
   end
-
-  // Explicit enable per guidelines: shift only when data_valid is asserted.
-  assign shift_en = data_valid;
+  assign shift_reg_en = |(shift_reg ^ next_state);
 
   // Shift left and append new sample at stage 0.
-  assign next_state = {shift_reg[DEPTH-2:0], data_in};
+  assign next_state = {shift_reg[DEPTH-2:0], {W_DATA{data_valid}} & data_in};
 
 // Output is the last stage (oldest sample)
   assign data_out = shift_reg[DEPTH-1];
-
-endmodule
 
 `ifndef ASSERTIONS_OFF
   //cadence translate_off
@@ -56,5 +52,4 @@ endmodule
   //synopsys translate_on
   //cadence translate_on
 `endif
-
 endmodule
