@@ -40,7 +40,7 @@ module LevelShiftRegister
     else if(soft_reset)   shift_reg <= '0;
     else if(shift_reg_en) shift_reg <= next_state;
   end
-  assign shift_reg_en = !(shift_reg ^ next_state);
+  assign shift_reg_en = |(shift_reg ^ next_state);
 
   // Shift left and append new sample at stage 0.
   assign next_state = {shift_reg[DEPTH-2:0], next_data_sticky};
