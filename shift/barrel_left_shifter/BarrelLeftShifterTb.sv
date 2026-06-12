@@ -22,7 +22,7 @@ module BarrelLeftShifterTb;
 		data_in = d;
 		shift_amount = s;
 		#1;
-		exp = logic'(d << s);
+		exp = d << s;
 		if (data_out !== exp) begin
 			$display("ERROR BarrelLeftShifter: d=%h s=%0d exp=%h got=%h", d, s, exp, data_out);
 			$fatal(1);
@@ -30,6 +30,9 @@ module BarrelLeftShifterTb;
 	endtask
 
 	initial begin
+		$dumpfile("shift/barrel_left_shifter/BarrelLeftShifter.vcd");
+		$dumpvars(0, BarrelLeftShifterTb);
+
 		data_in = '0;
 		shift_amount = '0;
 		#1;

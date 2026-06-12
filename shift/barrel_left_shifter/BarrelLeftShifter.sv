@@ -14,6 +14,14 @@ module BarrelLeftShifter #(
 	output logic [DATA_W-1:0]  data_out
 );
 
-	// TODO: implement
+	logic [DATA_W-1:0] stage [SHIFT_W+1];
+
+	assign stage[0] = data_in;
+
+	for (genvar i = 0; i < SHIFT_W; i++) begin : gen_stage
+		assign stage[i+1] = shift_amount[i] ? (stage[i] << (1 << i)) : stage[i];
+	end
+
+	assign data_out = stage[SHIFT_W];
 
 endmodule
